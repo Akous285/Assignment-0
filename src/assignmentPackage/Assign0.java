@@ -34,10 +34,10 @@ public class Assign0 {
 		Scanner input = new Scanner(System.in);
 
 		System.out.print("Please provide the name of the input file (to be located in " + INPUT_DATA_FOLDER + "): ");
-		String inputFilename = "full-dataset.csv";// input.nextLine();
+		String inputFilename = input.nextLine();
 
 		System.out.print("Please provide the name of the output file (to be placed in " + OUTPUT_DATA_FOLDER + "): ");
-		String outputFilename = "qualified_applicants.txt";// input.nextLine();
+		String outputFilename = input.nextLine();
 
 		ArrayList<String[]> rawApplicantList = readFile(inputFilename, ",");
 
@@ -334,6 +334,7 @@ public class Assign0 {
 
 	public static ArrayList<Applicant> convertListToListOfApplicants(ArrayList<String[]> applicantList) {
 		ArrayList<Applicant> objectApplicantList = new ArrayList<>();
+		
 		// skip index 0 because it is the header/label information
 
 		// split the string by the comma in order to organize the data
@@ -341,12 +342,6 @@ public class Assign0 {
 		applicantList.remove(0);
 
 		for (String[] line : applicantList) {
-
-			/*
-			 * System.out.println("line = [" + line + "]"); System.out.println("length = " +
-			 * line.length); for (int k = 0; k < line.length; k++) { if (line.charAt(k) ==
-			 * '\t') { System.out.println("Tab found at position " + k); } }
-			 */
 
 			String firstName = line[0].trim();
 			String lastName = line[1].trim();
@@ -359,13 +354,6 @@ public class Assign0 {
 			boolean all2 = convertToBoolean(line[8]);
 
 			String education = line[9].trim();
-
-			// debug print — temporary
-			/*
-			 * for (int j = 0; j < line.length; j++) { System.out.println(j + ": [" +
-			 * line[j] + "]"); }
-			 */
-
 			int workExperience = Integer.parseInt(line[10].trim());
 
 			boolean arrangedEmployment = convertToBoolean(line[11]);
@@ -390,17 +378,6 @@ public class Assign0 {
 
 	}
 
-	/**
-	 * This method will take the name of the file, read that file line by line, and
-	 * then return the file as an ArrayList of String arrays.
-	 *
-	 * @param filename  the name of the file (i.e. dataset-10.txt) that the
-	 *                  programmer wants to read. The assumption is that the
-	 *                  filename is found within a specified folder
-	 *                  INPUT_DATA_FOLDER
-	 * @param delimeter the delimeter that was used in the datafile to separate the
-	 *                  different columns of data
-	 */
 	public static ArrayList<String[]> readFile(String filename, String delimeter) throws IOException {
 
 		// build the file path
@@ -420,15 +397,6 @@ public class Assign0 {
 		while (reader.hasNextLine()) {
 			String line = reader.nextLine();
 
-			/*
-			 * System.out.println("line = [" + line + "]"); System.out.println("length = " +
-			 * line.length()); // String — needs parentheses
-			 * 
-			 * 
-			 * for (int k = 0; k < line.length(); k++) { if (line.charAt(k) == '\t') {
-			 * System.out.println("Tab found at position " + k); } }
-			 */
-
 			String[] splitLine = splitCsvLine(line);
 			linesList.add(splitLine);
 		}
@@ -436,70 +404,29 @@ public class Assign0 {
 
 		return linesList;
 	}
-
-	/**
-	 * Splits one line of CSV text into an array of fields, correctly handling
-	 * quoted fields that may contain commas (e.g. the "education" column, which can
-	 * look like: "Two or more certificates, diplomas, or degrees").
-	 *
-	 * The approach: walk through the line ONE CHARACTER AT A TIME, and keep track
-	 * of whether we are currently "inside" a pair of quotes. A comma only counts as
-	 * a real field separator when we are NOT inside quotes — commas that appear
-	 * inside quotes are treated as just part of the text.
-	 */
+	
 	public static String[] splitCsvLine(String line) {
 
-		// This will hold each finished field as we build them, one at a time.
-		// We use an ArrayList here (instead of a plain array) because we don't
-		// know in advance how many fields the line will split into.
 		ArrayList<String> fields = new ArrayList<String>();
-
-		// This flag tracks whether we are currently "inside" a quoted section.
-		// It starts false because we haven't seen an opening quote yet.
 		boolean insideQuotes = false;
 
-		// This string accumulates the characters of the field currently being built.
-		// Once we hit a real separator, we'll save this and start a new one.
 		String currentField = "";
 
-		// Loop through the line one character at a time.
 		for (int i = 0; i < line.length(); i++) {
 
-			// Grab the character at the current position.
 			char c = line.charAt(i);
 
 			if (c == '\"') {
-				// We found a quote character. This means we are either ENTERING
-				// a quoted section (if we weren't in one) or LEAVING one (if we were).
-				// Flipping the boolean with "!" toggles it between true and false.
 				insideQuotes = !insideQuotes;
-				// Note: we do NOT add the quote character itself to currentField —
-				// this means the quotes are automatically stripped from the output,
-				// so we don't need a separate step later to remove them.
-
 			} else if (c == ',' && !insideQuotes) {
-				// We found a comma, AND we are NOT inside quotes right now —
-				// this means it's a genuine field separator, not part of the text.
-				// So: save the field we've built so far (trimmed of extra spaces),
 				fields.add(currentField.trim());
-				// ...and reset currentField to start building the next one.
 				currentField = "";
-
 			} else {
-				// Any other character (including a comma that IS inside quotes)
-				// just gets added onto the field we're currently building.
 				currentField += c;
 			}
 		}
-
-		// After the loop finishes, there's one field left over that was never
-		// added to the list — the very last field on the line, since there's
-		// no trailing comma after it to trigger the "save it" step above.
 		fields.add(currentField.trim());
 
-		// Convert our ArrayList<String> into a plain String[] array, since that's
-		// the return type this method needs to match (and what the rest of the
-		// program, like convertListToListOfApplicants, expects to work with).
 		String[] result = new String[fields.size()];
 		for (int i = 0; i < fields.size(); i++) {
 			result[i] = fields.get(i);

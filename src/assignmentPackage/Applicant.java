@@ -1,9 +1,8 @@
 package assignmentPackage;
 
-//import java.util.ArrayList;
 
 public class Applicant {
-	//public static ArrayList<String> applicant = new ArrayList<String>();
+
 	public String firstName;
 	public String lastName;
 	public int age;
@@ -54,9 +53,9 @@ public class Applicant {
         this.score = 0;
     }
 	
-    // I was recommeded this change by eclipse
     // i considered using printf but i needed to return the value and not print it
-    
+    // w3schools.com used for toString
+     
     @Override
     public String toString() {
         return String.format("%-20s %-20s %5d %5d", firstName, lastName, age, score);
